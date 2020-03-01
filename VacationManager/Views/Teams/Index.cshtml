@@ -10,11 +10,19 @@
 
 
 @{
-    var user = _signInManager.UserManager.FindByNameAsync(User.Identity.Name).Result;
+    User user;
+    try
+    {
+        user = _signInManager.UserManager.FindByNameAsync(User.Identity.Name).Result;
+    }
+    catch
+    {
+        user = null;
+    }
 }
 
 
-@if (_signInManager.IsSignedIn(User) && user.Role == "CEO")
+@if (_signInManager.IsSignedIn(User) && user!=null && user.Role == "CEO")
 {
     <p>
         <a asp-action="Create">Create New</a>
@@ -48,7 +56,7 @@
                 <td>
                     @String.Join(", ", item.Developers.Select(u => u.FirstName + " " + u.LastName).ToArray())
                 </td>
-                @if (_signInManager.IsSignedIn(User) && user.Role == "CEO")
+                @if (_signInManager.IsSignedIn(User) && user!=null && user.Role == "CEO")
                 {
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>

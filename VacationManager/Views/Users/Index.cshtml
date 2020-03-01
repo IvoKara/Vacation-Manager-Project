@@ -8,11 +8,19 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@{ 
-    var user = _signInManager.UserManager.FindByNameAsync(User.Identity.Name).Result;
+@{
+    User user;
+    try
+    {
+        user = _signInManager.UserManager.FindByNameAsync(User.Identity.Name).Result;
+    }
+    catch
+    {
+        user = null;
+    }
 }
 
-@if (_signInManager.IsSignedIn(User) && user.Role == "CEO")
+@if (_signInManager.IsSignedIn(User) && user != null && user.Role == "CEO")
 {
     <p>
         <a asp-action="Create">Create New</a>
@@ -39,28 +47,28 @@
     <tbody>
         @foreach (var item in Model.Items)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Role)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Team.TeamName)
-            </td>
-            @if (_signInManager.IsSignedIn(User) && user.Role == "CEO")
-            {
+            <tr>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                    @Html.DisplayFor(modelItem => item.LastName)
                 </td>
-            }
-        </tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Role)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Team.TeamName)
+                </td>
+                @if (_signInManager.IsSignedIn(User) && user != null && user.Role == "CEO")
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                }
+            </tr>
         }
     </tbody>
 </table>
