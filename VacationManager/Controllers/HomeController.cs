@@ -45,10 +45,8 @@ namespace VacationManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                User signedUser = await _userManager.FindByEmailAsync(model.Email);
-                await _signInManager.SignInAsync(signedUser, false);
-
-                if (await _userManager.CheckPasswordAsync(signedUser, model.Password))
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, lockoutOnFailure:false);
+                if(result.Succeeded)
                 {
                     return RedirectToAction(nameof(Index));
                 }
@@ -76,6 +74,7 @@ namespace VacationManager.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
+                    EmailConfirmed = true,
                     Password = model.Password,
                     Role = "Unassigned",
                     SecurityStamp = Guid.NewGuid().ToString()
@@ -85,6 +84,7 @@ namespace VacationManager.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(newUser, false);
+             
                     _context.Add(newUser);
                     await _context.SaveChangesAsync();
 

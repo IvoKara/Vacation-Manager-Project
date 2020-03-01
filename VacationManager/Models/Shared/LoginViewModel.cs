@@ -8,11 +8,10 @@ namespace Web.Models.Shared
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email required to register.")]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Required(ErrorMessage = "Username required to login.")]
+        public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Password required to register.")]
+        [Required(ErrorMessage = "Password required to login.")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
     }

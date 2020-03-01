@@ -8,7 +8,11 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@if (_signInManager.IsSignedIn(User) && User.IsInRole("CEO"))
+@{ 
+    var user = _signInManager.UserManager.FindByNameAsync(User.Identity.Name).Result;
+}
+
+@if (_signInManager.IsSignedIn(User) && user.Role == "CEO")
 {
     <p>
         <a asp-action="Create">Create New</a>
@@ -49,7 +53,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Team.TeamName)
             </td>
-            @if (_signInManager.IsSignedIn(User) && User.IsInRole("CEO"))
+            @if (_signInManager.IsSignedIn(User) && user.Role == "CEO1")
             {
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
