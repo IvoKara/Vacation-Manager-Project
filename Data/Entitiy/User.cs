@@ -23,5 +23,7 @@ namespace Data.Entitiy
         public string Role { get; set; }
 
         public Team Team { get; set; }
+
+       // public IdentityUserClaim<int> Claim { get; set; }
     }
 }

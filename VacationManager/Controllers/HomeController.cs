@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Data.Context;
 using Data.Entitiy;
@@ -52,6 +53,7 @@ namespace VacationManager.Controllers
                     return RedirectToAction(nameof(Index));
                 }
                 ModelState.AddModelError(string.Empty, "Invalid Login Attempt!");
+                await _signInManager.SignOutAsync();
             }
             return View(model);
         }
@@ -75,15 +77,27 @@ namespace VacationManager.Controllers
                     LastName = model.LastName,
                     Email = model.Email,
                     Password = model.Password,
-                    Role = "Unassigned"
+                    Role = "Unassigned",
+                    SecurityStamp = Guid.NewGuid().ToString()
                 };
 
-                _context.Add(newUser);
-                await _context.SaveChangesAsync();
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(newUser, false);
+                    _context.Add(newUser);
+                    await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
             }
-
             return View(model);
         }
 

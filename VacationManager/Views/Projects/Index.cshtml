@@ -1,4 +1,7 @@
 ﻿@model Web.Models.Projects.ProjectsIndexViewModel
+@using Microsoft.AspNetCore.Identity;
+@using Data.Entitiy;
+@inject SignInManager<User> _signInManager;
 
 @{
     ViewData["Title"] = "Projects";
@@ -6,10 +9,12 @@
 
 <h1>@ViewData["Title"]</h1>
 
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (_signInManager.IsSignedIn(User) && User.IsInRole("CEO"))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -38,19 +43,22 @@
                 <td>
                     @String.Join(", ", item.WorkingTeams.Select(u => u.TeamName).ToArray())
                 </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
+                @if (_signInManager.IsSignedIn(User) && User.IsInRole("CEO"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                }
             </tr>
         }
     </tbody>
-    <ul class="pagination">
-        @for (var i = 1; i <= Model.Pager.PagesCount; i++)
-        {
-            <li class="page-item @(i == Model.Pager.CurrentPage ? "active" : "")">
-                <a asp-route-Pager.CurrentPage="@i" class="page-link">@i</a>
-            </li>
-        }
-    </ul>
 </table>
+<ul class="pagination d-flex justify-content-center">
+    @for (var i = 1; i <= Model.Pager.PagesCount; i++)
+    {
+        <li class="page-item @(i == Model.Pager.CurrentPage ? "active" : "")">
+            <a asp-route-Pager.CurrentPage="@i" class="page-link">@i</a>
+        </li>
+    }
+</ul>

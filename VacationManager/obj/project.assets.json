@@ -2,15 +2,6 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "Analytics/3.0.0": {
-        "type": "package",
-        "compile": {
-          "lib/Analytics.NET.dll": {}
-        },
-        "runtime": {
-          "lib/Analytics.NET.dll": {}
-        }
-      },
       "Castle.Core/4.4.0": {
         "type": "package",
         "dependencies": {
@@ -2899,7 +2890,6 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
         "dependencies": {
-          "Analytics": "3.0.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "3.1.2",
           "Microsoft.AspNetCore.Identity.UI": "3.1.2",
           "Microsoft.EntityFrameworkCore": "3.1.2",
@@ -2920,18 +2910,6 @@
     }
   },
   "libraries": {
-    "Analytics/3.0.0": {
-      "sha512": "b3+XBHr0sNdNauV60o1sHCmsriWUT+anVbDic/+cwjmKWXZEvuelSog4dYMexnILrZ8C4FHg5/ljrIqj5H/SGQ==",
-      "type": "package",
-      "path": "analytics/3.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "analytics.3.0.0.nupkg.sha512",
-        "analytics.nuspec",
-        "lib/Analytics.NET.dll"
-      ]
-    },
     "Castle.Core/4.4.0": {
       "sha512": "b5rRL5zeaau1y/5hIbI+6mGw3cwun16YjkHZnV9RRT5UyUIFsgLmNXJ0YnIN9p8Hw7K7AbG1q1UclQVU3DinAQ==",
       "type": "package",
@@ -9099,7 +9077,6 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "Analytics >= 3.0.0",
       "Data >= 1.0.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 3.1.2",
       "Microsoft.AspNetCore.Identity.UI >= 3.1.2",
@@ -9158,10 +9135,6 @@
     "frameworks": {
       "netcoreapp3.1": {
         "dependencies": {
-          "Analytics": {
-            "target": "Package",
-            "version": "[3.0.0, )"
-          },
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
             "target": "Package",
             "version": "[3.1.2, )"
@@ -9228,17 +9201,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'Analytics 3.0.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework '.NETCoreApp,Version=v3.1'. This package may not be fully compatible with your project.",
-      "libraryId": "Analytics",
-      "targetGraphs": [
-        ".NETCoreApp,Version=v3.1"
-      ]
-    }
-  ]
+  }
 }

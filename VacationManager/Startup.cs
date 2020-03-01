@@ -30,7 +30,7 @@ namespace VacationManager
             services.AddDbContext<VacantionContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<User>(options =>
+            services.AddIdentity<User, IdentityRole<int>>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequiredLength = 5;
@@ -39,8 +39,7 @@ namespace VacationManager
                 options.Password.RequireDigit = false;
                 options.Password.RequireUppercase = false;
             })
-            .AddEntityFrameworkStores<VacantionContext>()
-            .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<VacantionContext>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -66,6 +65,7 @@ namespace VacationManager
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
