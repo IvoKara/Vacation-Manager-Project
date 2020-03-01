@@ -53,7 +53,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Team.TeamName)
             </td>
-            @if (_signInManager.IsSignedIn(User) && user.Role == "CEO1")
+            @if (_signInManager.IsSignedIn(User) && user.Role == "CEO")
             {
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>

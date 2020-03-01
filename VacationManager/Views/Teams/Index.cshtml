@@ -8,7 +8,13 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@if (_signInManager.IsSignedIn(User) && User.IsInRole("CEO"))
+
+@{
+    var user = _signInManager.UserManager.FindByNameAsync(User.Identity.Name).Result;
+}
+
+
+@if (_signInManager.IsSignedIn(User) && user.Role == "CEO")
 {
     <p>
         <a asp-action="Create">Create New</a>
@@ -32,24 +38,24 @@
     <tbody>
         @foreach (var item in Model.Items)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TeamName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WorkingOnProject.ProjectName)
-            </td>
-            <td>
-                @String.Join(", ", item.Developers.Select(u => u.FirstName + " " + u.LastName).ToArray())
-            </td>
-            @if (_signInManager.IsSignedIn(User) && User.IsInRole("CEO"))
-            {
+            <tr>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @Html.DisplayFor(modelItem => item.TeamName)
                 </td>
-            }
-        </tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WorkingOnProject.ProjectName)
+                </td>
+                <td>
+                    @String.Join(", ", item.Developers.Select(u => u.FirstName + " " + u.LastName).ToArray())
+                </td>
+                @if (_signInManager.IsSignedIn(User) && user.Role == "CEO")
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                }
+            </tr>
         }
     </tbody>
 </table>
