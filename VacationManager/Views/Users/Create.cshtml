@@ -12,8 +12,9 @@
     roles.Insert(0, unassigned);
 
     var noTeam = _context.Teams.First(x => x.TeamName == "-");
-    var teams =  _context.Teams.Where(x => x.TeamName != "-").ToList();
-    teams.Insert(0, noTeam);
+    var team =  _context.Teams.Where(x => x.TeamName != "-").ToList();
+    team.Insert(0, noTeam);
+    var teams = team.Select(x => x.TeamName).ToList();
 }
 
 <h2>@ViewData["Title"]</h2>

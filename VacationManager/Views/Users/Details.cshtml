@@ -1,0 +1,37 @@
+﻿@model Web.Models.Users.UsersDetailsViewModel
+@using Microsoft.AspNetCore.Identity;
+@using Data.Entitiy;
+@inject SignInManager<User> _signInManager;
+
+@{
+    ViewData["Title"] = Model.FirstName + " " + Model.LastName;
+
+    string[] role = { "" };
+    try
+    {
+        var user = await _signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+        var tempRole = await _signInManager.UserManager.GetRolesAsync(user);
+        role[0] = tempRole[0];
+    }
+    catch { }
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="container">
+    <p><b>Email:</b> @Model.Email</p>
+    <p><b>UserName:</b> @Model.UserName</p>
+    <p><b>Team:</b> @Model.Team</p>
+    <p><b>Role:</b> @Model.Role</p>
+    <p><b>Leader of team:</b> </p>
+</div>
+
+
+
+@if (_signInManager.IsSignedIn(User) && role.First() == "CEO" /*&& user != null*/)
+{
+
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+
+}

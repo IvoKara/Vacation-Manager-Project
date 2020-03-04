@@ -98,9 +98,32 @@ namespace Web
         }
 
         // GET: Users/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            User user = await _context.Users.
+                 Include(u => u.Role).
+                 Include(u => u.Team).
+                 FirstAsync(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            UsersDetailsViewModel model = new UsersDetailsViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Team = user.Team.TeamName,
+                Role = user.Role.Name
+            };
+            return View(model);
         }
 
         // GET: Users/Edit/5
