@@ -1,0 +1,39 @@
+﻿
+@using Microsoft.AspNetCore.Identity;
+@using Data.Entitiy;
+@inject SignInManager<User> _signInManager;
+@inject RoleManager<Role> _roleManager;
+@{
+    ViewData["Title"] = "Roles";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@{
+    string[] role = { "" };
+    try
+    {
+        var user = await _signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+        var tempRole = await _signInManager.UserManager.GetRolesAsync(user);
+        role[0] = tempRole[0];
+    }
+    catch
+    {
+
+    }
+}
+
+
+<table class="table">
+    <thead>
+        @foreach (var item in _roleManager.Roles)
+        {
+            <tr>
+                <th>
+                    @item.Name
+                    @item.UsersInRole.Count
+                </th>
+            </tr>
+        }
+    </thead>
+</table>

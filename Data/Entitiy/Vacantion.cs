@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Data.Entitiy
 {
     public class Vacantion
     {
+        [Key]
         public int Id { get; set; }
        
         public string Type { get; set; }

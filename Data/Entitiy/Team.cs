@@ -9,6 +9,7 @@ namespace Data.Entitiy
 {
     public class Team
     {
+        [Key]
         public int Id { get; set; }
 
         public string TeamName { get; set; }

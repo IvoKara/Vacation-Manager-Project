@@ -5,33 +5,37 @@ using System.Text;
 using Data.Entitiy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
+using System.Linq;
 
 namespace Data.Context
 {
-    public class VacantionContext : IdentityDbContext<User, IdentityRole<int>, int>
+    public class VacantionContext : IdentityDbContext<User, Role, int>
     {
-        //public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<Project> Projects { get; set; }
-        //public DbSet<IdentityUserClaim<int>> IdentityUserClaims { get; set; }
+        //public virtual DbSet<Role> Roles { get; set; }
 
         public VacantionContext(DbContextOptions<VacantionContext> options) : base(options)
         { }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-            //modelBuilder.Entity<IdentityUserRole<Guid>>().HasKey(p => new { p.UserId, p.RoleId });
-            /*modelBuilder.Entity<Team>()
-                .HasMany(u => u.Developers)
-                .WithOne(t => t.Team)
-                .IsRequired();
+         /*   modelBuilder.Entity<User>()
+             .HasOne(b => b.Role)
+             .WithMany(a => a.UsersInRole)
+             .OnDelete(DeleteBehavior.SetNull);*/
 
-            modelBuilder.Entity<Project>()
-                .HasMany(t => t.WorkingTeams)
-                .WithOne(p => p.WorkingOnProject)
-                .IsRequired();*/
+            modelBuilder.Entity<User>()
+             .HasOne(b => b.Team)
+             .WithMany(a => a.Developers)
+             .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Team>()
+            .HasOne(b => b.WorkingOnProject)
+            .WithMany(a => a.WorkingTeams)
+            .OnDelete(DeleteBehavior.SetNull);
+
+            base.OnModelCreating(modelBuilder);
         }        
     }
 }

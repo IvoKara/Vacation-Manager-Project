@@ -115,9 +115,6 @@ namespace Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -284,14 +281,16 @@ namespace Data.Migrations
 
                     b.HasOne("Data.Entitiy.Project", "WorkingOnProject")
                         .WithMany("WorkingTeams")
-                        .HasForeignKey("WorkingOnProjectId");
+                        .HasForeignKey("WorkingOnProjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Data.Entitiy.User", b =>
                 {
                     b.HasOne("Data.Entitiy.Team", "Team")
                         .WithMany("Developers")
-                        .HasForeignKey("TeamId");
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

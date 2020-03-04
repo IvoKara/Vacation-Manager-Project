@@ -36,7 +36,7 @@ namespace Web
                 FirstName = u.FirstName,
                 LastName = u.LastName,
                 Role = u.Role,
-                Team = u.Team
+                Team = u.Team != null ? u.Team : new Team() { TeamName = "-" }
 
             }).ToListAsync();
 
@@ -50,29 +50,6 @@ namespace Web
         public ActionResult Details(int id)
         {
             return View();
-        }
-
-        // GET: Users/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Users/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
 
         // GET: Users/Edit/5

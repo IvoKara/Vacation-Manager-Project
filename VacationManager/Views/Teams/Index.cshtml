@@ -9,20 +9,21 @@
 <h1>@ViewData["Title"]</h1>
 
 
-@{
-    User user;
+@{    
+    string[] role = { "" };
     try
     {
-        user = _signInManager.UserManager.FindByNameAsync(User.Identity.Name).Result;
+        var user = await _signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+        var tempRole = await _signInManager.UserManager.GetRolesAsync(user);
+        role[0] = tempRole[0];
     }
     catch
     {
-        user = null;
+
     }
 }
 
-
-@if (_signInManager.IsSignedIn(User) && user!=null && user.Role == "CEO")
+@if (_signInManager.IsSignedIn(User) && role.First() == "CEO" /*&& user != null*/)
 {
     <p>
         <a asp-action="Create">Create New</a>
@@ -46,24 +47,24 @@
     <tbody>
         @foreach (var item in Model.Items)
         {
-            <tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WorkingOnProject.ProjectName)
+            </td>
+            <td>
+                @String.Join(", ", item.Developers.Select(u => u.FirstName + " " + u.LastName).ToArray())
+            </td>
+            @if (_signInManager.IsSignedIn(User) && role.First() == "CEO" /*&& user != null*/)
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.TeamName)
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.WorkingOnProject.ProjectName)
-                </td>
-                <td>
-                    @String.Join(", ", item.Developers.Select(u => u.FirstName + " " + u.LastName).ToArray())
-                </td>
-                @if (_signInManager.IsSignedIn(User) && user!=null && user.Role == "CEO")
-                {
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    </td>
-                }
-            </tr>
+            }
+        </tr>
         }
     </tbody>
 </table>

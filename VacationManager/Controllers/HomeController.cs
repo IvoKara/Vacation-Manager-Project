@@ -19,14 +19,43 @@ namespace VacationManager.Controllers
         private readonly VacantionContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly RoleManager<Role> _roleManager;
         private const int PageSize = 10;
+        private string[] roles = { "Team Lead", "Developer", "CEO", "Unassigned" };
 
-        public HomeController(VacantionContext context, UserManager<User> userManager, SignInManager<User> signInManager)
+        public HomeController(VacantionContext context, UserManager<User> userManager,
+            SignInManager<User> signInManager, RoleManager<Role> roleManager)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
+            foreach (var role in roles)
+            {
+                if (!_roleManager.Roles.Any(x => x.Name == role))
+                {
+                    _context.Add(new Role() { Name = role, NormalizedName = role.ToUpper() });
+                    _context.SaveChanges();
+                }
+                /* 
+                 InsertRoles();*/
+            }
         }
+
+       /* private async Task InsertRoles()
+        {
+            foreach (var role in roles)
+            {
+                bool x = await _roleManager.RoleExistsAsync(role);
+                if (!x)
+                {
+                    var identityRole = new IdentityRole();
+                    identityRole.Name = role;
+                    await _roleManager.CreateAsync(identityRole);
+                }
+            }
+            
+        }*/
 
         public IActionResult Index()
         {
@@ -59,7 +88,8 @@ namespace VacationManager.Controllers
         [HttpGet]
         public IActionResult Signup()
         {
-            return  View();
+            SignupViewModel model = new SignupViewModel();
+            return  View(model);
         }
 
         [HttpPost]
@@ -76,18 +106,15 @@ namespace VacationManager.Controllers
                     Email = model.Email,
                     EmailConfirmed = true,
                     Password = model.Password,
-                    Role = "Unassigned",
+                    Role = _roleManager.Roles.First( x=> x.Name == "Unassigned"),
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
 
                 var result = await _userManager.CreateAsync(newUser, model.Password);
                 if (result.Succeeded)
                 {
+                    var res2 = await _userManager.AddToRoleAsync(newUser, "Unassigned");
                     await _signInManager.SignInAsync(newUser, false);
-             
-                    _context.Add(newUser);
-                    await _context.SaveChangesAsync();
-
                     return RedirectToAction(nameof(Index));
                 }
                 else
