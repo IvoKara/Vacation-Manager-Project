@@ -21,7 +21,7 @@ namespace VacationManager.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<Role> _roleManager;
         private const int PageSize = 10;
-        private string[] roles = { "Team Lead", "Developer", "CEO", "Unassigned" };
+        private string[] roles = { "Unassigned", "Team Lead", "Developer", "CEO" };
 
         public HomeController(VacantionContext context, UserManager<User> userManager,
             SignInManager<User> signInManager, RoleManager<Role> roleManager)
@@ -37,25 +37,13 @@ namespace VacationManager.Controllers
                     _context.Add(new Role() { Name = role, NormalizedName = role.ToUpper() });
                     _context.SaveChanges();
                 }
-                /* 
-                 InsertRoles();*/
+            }
+            if(!_context.Teams.Any(x => x.TeamName == "-"))
+            {
+                _context.Add(new Team() { TeamName = "-" });
+                _context.SaveChanges();
             }
         }
-
-       /* private async Task InsertRoles()
-        {
-            foreach (var role in roles)
-            {
-                bool x = await _roleManager.RoleExistsAsync(role);
-                if (!x)
-                {
-                    var identityRole = new IdentityRole();
-                    identityRole.Name = role;
-                    await _roleManager.CreateAsync(identityRole);
-                }
-            }
-            
-        }*/
 
         public IActionResult Index()
         {
@@ -106,7 +94,8 @@ namespace VacationManager.Controllers
                     Email = model.Email,
                     EmailConfirmed = true,
                     Password = model.Password,
-                    Role = _roleManager.Roles.First( x=> x.Name == "Unassigned"),
+                    Role = _roleManager.Roles.First(x => x.Name == "Unassigned"),
+                    Team = _context.Teams.First(x => x.TeamName == "-"),
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
 

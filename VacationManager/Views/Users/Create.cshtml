@@ -1,8 +1,19 @@
-﻿@model Web.Models.Shared.SignupViewModel
-
+﻿@model Web.Models.Users.UsersCreateViewModel
+@using Microsoft.AspNetCore.Identity;
+@using Data.Context;
+@using Data.Entitiy;
+@inject VacantionContext _context;
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Create User";
     Layout = "~/Views/Shared/_NoLayout.cshtml";
+
+    var unassigned = _context.Roles.First(x => x.Name == "Unassigned");
+    var roles = _context.Roles.Where(x => x.Name != "Unassigned").ToList();
+    roles.Insert(0, unassigned);
+
+    var noTeam = _context.Teams.First(x => x.TeamName == "-");
+    var teams =  _context.Teams.Where(x => x.TeamName != "-").ToList();
+    teams.Insert(0, noTeam);
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -10,7 +21,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Signup">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="UserName" class="control-label"></label>
@@ -36,6 +47,16 @@
                 <label asp-for="Password" class="control-label"></label>
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Role" class="control-label"></label>
+                <select asp-for="Role" class="form-control" asp-items="@(new SelectList(roles))"></select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team" class="control-label"></label>
+                <select asp-for="Team" class="form-control" asp-items="@(new SelectList(teams))"></select>
+                <span asp-validation-for="Team" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Submit" class="btn btn-primary" />

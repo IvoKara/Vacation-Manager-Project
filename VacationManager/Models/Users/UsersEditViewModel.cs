@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,23 +9,28 @@ namespace Web.Models.Users
 {
     public class UsersEditViewModel
     {
-        [Required]
-        [MaxLength(80, ErrorMessage = "UserName name cannot be longer than 80 characters")]
+        [HiddenInput]
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Username required.")]
+        [MaxLength(50, ErrorMessage = "Username cannot be more than 50 characters")]
         public string UserName { get; set; }
 
-        [Required]
-        [MaxLength(80, ErrorMessage = "FirstName name cannot be longer than 80 characters")]
+        [Required(ErrorMessage = "You need to place a Name.")]
+        [RegularExpression(@"^[A-Z][a-z]+$", ErrorMessage = "Name should consist of letters only and capital first letter")]
         public string FirstName { get; set; }
-        
-        [Required]
-        [MaxLength(80, ErrorMessage = "LastName name cannot be longer than 80 characters")]
+
+        [Required(ErrorMessage = "You need to place a Name.")]
+        [MaxLength(50, ErrorMessage = "Username cannot be more than 50 characters")]
+        [RegularExpression(@"^[A-Z][a-z]+$", ErrorMessage = "Name should consist of letters only and capital first letter")]
         public string LastName { get; set; }
-        
-        [Required]
-        [MaxLength(20, ErrorMessage = "Role name cannot be longer than 20 characters")]
+
+        [Required(ErrorMessage = "Email required.")]
+        [EmailAddress]
+        public string Email { get; set; }
+
         public string Role { get; set; }
 
-        //[Required]
-        //public Teams.TeamsViewModel Team { get; set; }
+        public string Team { get; set; }
     }
 }

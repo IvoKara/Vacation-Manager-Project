@@ -36,7 +36,7 @@ namespace Web
                 Developers = u.Developers,
                 WorkingOnProject = u.WorkingOnProject
 
-            }).ToListAsync();
+            }).Where(x => x.TeamName != "-").ToListAsync();
 
             model.Items = items;
             model.Pager.PagesCount = (int)Math.Ceiling(await _context.Teams.CountAsync() / (double)PageSize);

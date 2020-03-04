@@ -51,28 +51,30 @@
     <tbody>
         @foreach (var item in Model.Items)
         {
-            <tr>
-                <td>
+        <tr>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">
                     @Html.DisplayFor(modelItem => item.FirstName)
                     @Html.DisplayFor(modelItem => item.LastName)
-                </td>
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team.TeamName)
+            </td>
+            @if (_signInManager.IsSignedIn(User) && role.First() == "CEO" /*&& user != null*/)
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.Email)
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Role.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Team.TeamName)
-                </td>
-                @if (_signInManager.IsSignedIn(User) && role.First() == "CEO" /*&& user != null*/)
-                {
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    </td>
-                }
-            </tr>
+            }
+        </tr>
         }
     </tbody>
 </table>

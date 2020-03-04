@@ -180,3 +180,5 @@ C:\Users\Elena\Desktop\VacationManager\VacationManager\bin\Debug\netcoreapp3.1\M
 C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Web.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Web.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Razor\Views\Roles\Index.cshtml.g.cs
+C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Razor\Views\Users\Create.cshtml.g.cs
+C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Razor\Views\Users\Edit.cshtml.g.cs

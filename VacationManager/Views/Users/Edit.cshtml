@@ -1,8 +1,38 @@
-﻿@model Web.Models.Shared.SignupViewModel
-
+﻿@model Web.Models.Users.UsersEditViewModel
+@using Microsoft.AspNetCore.Identity;
+@using Data.Context;
+@using Data.Entitiy;
+@inject SignInManager<User> _signInManager;
+@inject VacantionContext _context;
 @{
-    ViewData["Title"] = "Register";
-    Layout = "~/Views/Shared/_NoLayout.cshtml";
+    ViewData["Title"] = "Edit User";
+    //Layout = "~/Views/Shared/_NoLayout.cshtml";
+
+    var currentTeam = (Team)ViewData["BeforeTeam"];
+    var team = _context.Teams.Where(x => x.TeamName != currentTeam.TeamName && x.TeamName != "-").ToList();
+    var teams = team.Select(x => x.TeamName).ToList();
+    //if( != )
+    teams.Remove("-");
+    teams.Insert(0, "-");
+    if(currentTeam.TeamName != "-")
+    {
+        teams.Insert(0, currentTeam.TeamName);  
+    }
+
+    string[] role = { "" };
+    try
+    {
+        var user = await _signInManager.UserManager.FindByNameAsync(ViewData["EditUser"].ToString());
+        var tempRole = await _signInManager.UserManager.GetRolesAsync(user);
+        role[0] = tempRole[0];
+
+        //var tempTeam
+    }
+    catch { }
+
+    var currentRole = _context.Roles.First(x => x.Name == role[0]);
+    var roles = _context.Roles.Where(x => x.Name != role[0]).ToList();
+    roles.Insert(0, currentRole);
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -10,7 +40,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Signup">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="UserName" class="control-label"></label>
@@ -33,9 +63,14 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+                <label asp-for="Role" class="control-label"></label>
+                <select asp-for="Role" class="form-control" asp-items="@(new SelectList(roles))"></select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team" class="control-label"></label>
+                <select asp-for="Team" class="form-control" asp-items="@(new SelectList(teams))"></select>
+                <span asp-validation-for="Team" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Submit" class="btn btn-primary" />
