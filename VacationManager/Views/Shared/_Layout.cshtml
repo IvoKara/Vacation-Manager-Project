@@ -5,6 +5,7 @@
     @using Microsoft.AspNetCore.Identity;
     @using Data.Entitiy;
     @inject SignInManager<User> _signInManager;
+    
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -55,24 +56,27 @@
 
                 <div class="collapse navbar-collapse right-members" id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-                        @if (_signInManager.IsSignedIn(User))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action=""><b>@User.Identity.Name</b></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="Logout">Log out</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="Login">Log in</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="Signup">Sign up</a>
-                            </li>
-                        }
+                    @if (_signInManager.IsSignedIn(User))
+                    {
+                                
+                        var user = await _signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Users" asp-action="Details" asp-route-id="@user.Id"><b>@User.Identity.Name</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Logout">Log out</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Login">Log in</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Signup">Sign up</a>
+                        </li>
+                    }
                     </ul>
                 </div>
             </nav>

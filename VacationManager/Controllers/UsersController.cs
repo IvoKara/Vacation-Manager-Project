@@ -126,6 +126,68 @@ namespace Web
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> UserEdit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            User user = await _context.Users.FirstAsync(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            UsersUserEditViewModel model = new UsersUserEditViewModel
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Password = user.Password
+            };
+
+            return View(model);
+        }
+
+        // POST: Users/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UserEdit(UsersUserEditViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _userManager.FindByIdAsync(model.Id.ToString());
+                user.Id = model.Id;
+                user.UserName = model.UserName;
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.Email = model.Email;
+                user.EmailConfirmed = true;
+                user.Password = model.Password;
+                user.SecurityStamp = Guid.NewGuid().ToString();
+
+                await _signInManager.SignOutAsync();
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, false);
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+            }
+            return View(model);
+        }
+
         // GET: Users/Edit/5
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
@@ -206,6 +268,11 @@ namespace Web
         public async Task<IActionResult> Delete(int id)
         {
             User user = await _userManager.FindByIdAsync(id.ToString());
+            User logged = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (logged.UserName == user.UserName)
+            {
+                await _signInManager.SignOutAsync();
+            }
             await _userManager.DeleteAsync(user);
             return RedirectToAction(nameof(Index));
         }

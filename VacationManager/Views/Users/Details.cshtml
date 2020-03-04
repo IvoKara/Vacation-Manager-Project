@@ -28,10 +28,22 @@
 
 
 
-@if (_signInManager.IsSignedIn(User) && role.First() == "CEO" /*&& user != null*/)
+@if (_signInManager.IsSignedIn(User) && role.First() == "CEO")
 {
 
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
     <a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
 
 }
+
+@if (_signInManager.IsSignedIn(User) && User.Identity.Name == Model.UserName)
+{
+
+    <a asp-action="UserEdit" asp-route-id="@Model.Id">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+
+}
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
