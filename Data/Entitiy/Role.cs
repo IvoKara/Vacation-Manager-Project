@@ -8,10 +8,8 @@ using System.Text;
 namespace Data.Entitiy
 {
     public class Role : IdentityRole<int>
-    {
-        public Role() { this.UsersInRole = new HashSet<User>(); }
-      
-        [Required]
+    { 
+        //[Required]
         [InverseProperty("Role")]
         public ICollection<User> UsersInRole { get; set; }
     }

@@ -1,16 +1,17 @@
-﻿
+﻿@using Microsoft.EntityFrameworkCore;
 @using Microsoft.AspNetCore.Identity;
 @using Data.Entitiy;
+@using Data.Context;
 @inject SignInManager<User> _signInManager;
-@inject RoleManager<Role> _roleManager;
+@inject VacantionContext _context;
 @{
     ViewData["Title"] = "Roles";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 style="text-align:center">@ViewData["Title"]</h1>
 
 @{
-    
+
     string[] role = { "" };
     try
     {
@@ -22,19 +23,34 @@
     {
 
     }
+    var ordered = _context.Roles.Include(u => u.UsersInRole).OrderBy(u => u.Name);
+    var firstPart = ordered.Take(2);
+    var secondPart = ordered.Skip(2);
 }
 
-
-<table class="table">
-    <thead>
-        @foreach (var item in _roleManager.Roles)
-        {
-            <tr>
-                <th>
-                    @item.Name
-                    @item.UsersInRole.Count
-                </th>
-            </tr>
-        }
-    </thead>
-</table>
+@foreach (var part in new[] { firstPart, secondPart })
+{
+    <div class="container-fluid" style="margin-top: 4%">
+        <div class="row">
+            @foreach (var item in part)
+            {
+                <div class="col-sm" style="text-align:center; font-size:50px;">
+                    <b>@item.UsersInRole.Count</b>
+                </div>
+            }
+        </div>
+        <div class="row">
+            @foreach (var item in part)
+            {
+                <div class="col-sm" style="text-align:center; font-size:20px;">
+                    @if (item.UsersInRole.Count > 1 && item.Name != "Unassigned")
+                    {
+                        item.Name += "s";
+                    }
+                    
+                    <a asp-action="@item.Name">@item.Name</a>
+                </div>
+            }
+        </div>
+    </div>
+}

@@ -2,10 +2,14 @@
 
 namespace Data.Migrations
 {
-    public partial class Roles3 : Migration
+    public partial class RolesNew : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            /*migrationBuilder.DropForeignKey(
+                name: "FK_AspNetUsers_AspNetRoles_RoleId",
+                table: "AspNetUsers");*/
+
             migrationBuilder.DropColumn(
                 name: "Role",
                 table: "AspNetUsers");
@@ -13,12 +17,12 @@ namespace Data.Migrations
             migrationBuilder.AddColumn<int>(
                 name: "RoleId",
                 table: "AspNetUsers",
-                nullable: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_RoleId",
-                table: "AspNetUsers",
-                column: "RoleId");
+                nullable: false,
+                defaultValue: 0
+                //oldClrType: typeof(int),
+                //oldType: "int",
+                //oldNullable: true
+                );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUsers_AspNetRoles_RoleId",
@@ -26,7 +30,7 @@ namespace Data.Migrations
                 column: "RoleId",
                 principalTable: "AspNetRoles",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+                onDelete: ReferentialAction.SetNull);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -35,19 +39,26 @@ namespace Data.Migrations
                 name: "FK_AspNetUsers_AspNetRoles_RoleId",
                 table: "AspNetUsers");
 
-            migrationBuilder.DropIndex(
-                name: "IX_AspNetUsers_RoleId",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
+            migrationBuilder.AlterColumn<int>(
                 name: "RoleId",
-                table: "AspNetUsers");
+                table: "AspNetUsers",
+                type: "int",
+                nullable: true,
+                oldClrType: typeof(int));
 
             migrationBuilder.AddColumn<string>(
                 name: "Role",
                 table: "AspNetUsers",
                 type: "nvarchar(max)",
                 nullable: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUsers_AspNetRoles_RoleId",
+                table: "AspNetUsers",
+                column: "RoleId",
+                principalTable: "AspNetRoles",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
     }
 }

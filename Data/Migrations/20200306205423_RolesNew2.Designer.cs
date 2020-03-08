@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(VacantionContext))]
-    [Migration("20200302215322_Roles7")]
-    partial class Roles7
+    [Migration("20200306205423_RolesNew2")]
+    partial class RolesNew2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -179,6 +179,41 @@ namespace Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("Data.Entitiy.Vacantion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("DateOfCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FromUserId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("HalfDayVacantion")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ToDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Verified")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromUserId");
+
+                    b.ToTable("Vacantions");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -288,18 +323,30 @@ namespace Data.Migrations
 
                     b.HasOne("Data.Entitiy.Project", "WorkingOnProject")
                         .WithMany("WorkingTeams")
-                        .HasForeignKey("WorkingOnProjectId");
+                        .HasForeignKey("WorkingOnProjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Data.Entitiy.User", b =>
                 {
                     b.HasOne("Data.Entitiy.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId");
+                        .WithMany("UsersInRole")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Data.Entitiy.Team", "Team")
                         .WithMany("Developers")
-                        .HasForeignKey("TeamId");
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Data.Entitiy.Vacantion", b =>
+                {
+                    b.HasOne("Data.Entitiy.User", "FromUser")
+                        .WithMany("Vacantions")
+                        .HasForeignKey("FromUserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

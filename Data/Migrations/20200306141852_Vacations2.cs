@@ -2,20 +2,13 @@
 
 namespace Data.Migrations
 {
-    public partial class Roles7 : Migration
+    public partial class Vacations2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
+           /* migrationBuilder.DropForeignKey(
                 name: "FK_AspNetUsers_AspNetRoles_RoleId",
                 table: "AspNetUsers");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "RoleId",
-                table: "AspNetUsers",
-                nullable: true,
-                oldClrType: typeof(int),
-                oldType: "int");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUsers_AspNetRoles_RoleId",
@@ -23,22 +16,14 @@ namespace Data.Migrations
                 column: "RoleId",
                 principalTable: "AspNetRoles",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+                onDelete: ReferentialAction.SetNull);*/
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
+          /*  migrationBuilder.DropForeignKey(
                 name: "FK_AspNetUsers_AspNetRoles_RoleId",
-                table: "AspNetUsers");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "RoleId",
-                table: "AspNetUsers",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldNullable: true);
+                table: "AspNetUsers");*/
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUsers_AspNetRoles_RoleId",
@@ -46,7 +31,7 @@ namespace Data.Migrations
                 column: "RoleId",
                 principalTable: "AspNetRoles",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.SetNull);
         }
     }
 }

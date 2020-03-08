@@ -13,17 +13,17 @@ namespace Data.Context
     {
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<Project> Projects { get; set; }
-        //public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<Vacantion> Vacantions { get; set; }
 
         public VacantionContext(DbContextOptions<VacantionContext> options) : base(options)
         { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-         /*   modelBuilder.Entity<User>()
-             .HasOne(b => b.Role)
-             .WithMany(a => a.UsersInRole)
-             .OnDelete(DeleteBehavior.SetNull);*/
+            modelBuilder.Entity<Vacantion>()
+             .HasOne(b => b.FromUser)
+             .WithMany(a => a.Vacantions)
+             .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<User>()
              .HasOne(b => b.Team)
@@ -34,6 +34,16 @@ namespace Data.Context
             .HasOne(b => b.WorkingOnProject)
             .WithMany(a => a.WorkingTeams)
             .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<User>()
+            .HasOne(u => u.Role)
+            .WithMany(r => r.UsersInRole)
+            .OnDelete(DeleteBehavior.SetNull);
+
+            /*foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.SetNull;
+            }*/
 
             base.OnModelCreating(modelBuilder);
         }        

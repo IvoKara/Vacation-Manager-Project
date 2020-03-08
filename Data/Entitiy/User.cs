@@ -16,11 +16,15 @@ namespace Data.Entitiy
 
         public string LastName { get; set; }
 
-        [Required]
+        //[Required]
         public Role Role { get; set; }
 
-        [Required]
+        //[Required]
         //[InverseProperty("Developers")]
         public Team Team { get; set; }
+
+        //[Required]
+        [InverseProperty("FromUser")]
+        public ICollection<Vacantion> Vacantions { get; set; }
     }
 }

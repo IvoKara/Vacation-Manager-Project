@@ -79,20 +79,21 @@ namespace Web
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
 
-                _context.Add(newUser);
-                _context.SaveChanges();
-               // if (result.Succeeded)
-               // {
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                if (result.Succeeded)
+                {
                     var res2 = await _userManager.AddToRoleAsync(newUser, model.Role);
+                    //newUser.Role.UsersInRole.Add(newUser);
+                    //await _signInManager.SignInAsync(newUser, false);
                     return RedirectToAction(nameof(Index));
-               // }
-               /* else
+                }
+                else
                 {
                     foreach (var error in result.Errors)
                     {
                         ModelState.AddModelError("", error.Description);
                     }
-                }*/
+                }
             }
             return View(model);
         }
@@ -167,7 +168,8 @@ namespace Web
                 user.LastName = model.LastName;
                 user.Email = model.Email;
                 user.EmailConfirmed = true;
-                user.Password = model.Password;
+                user.Password = model.Password; 
+                user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, model.Password);
                 user.SecurityStamp = Guid.NewGuid().ToString();
 
                 await _signInManager.SignOutAsync();
@@ -218,7 +220,7 @@ namespace Web
                 LastName = user.LastName,
                 Email = user.Email,
                 //Password = user.Password,
-                //Role = _userManager.GetRolesAsync(user).ToString(),
+                //Role = user.Role.Name,
                 //Team = user.Team.TeamName
             };
 
@@ -232,14 +234,14 @@ namespace Web
         {
             if (ModelState.IsValid)
             {
-                User user = await _userManager.FindByIdAsync(model.Id.ToString());
+                User user = await _context.Users.Include(u => u.Role).Include(u => u.Team).FirstAsync(u => u.Id == model.Id);
                 user.Id = model.Id;
                 user.UserName = model.UserName;
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
                 user.Email = model.Email;
                 user.EmailConfirmed = true;
-                //user.Password = model.Password;
+                string beforeRole = user.Role.Name;
                 user.Role = _roleManager.Roles.First(x => x.Name == model.Role);
                 user.Team = _context.Teams.FirstOrDefault(x => x.TeamName == model.Team);
                 user.SecurityStamp = Guid.NewGuid().ToString();
@@ -249,9 +251,14 @@ namespace Web
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
-                    var beforeRole = _context.Roles.ToList();
-                    var res3 = await _userManager.RemoveFromRoleAsync(user, beforeRole[0].Name);
-                    var res2 = await _userManager.AddToRoleAsync(user, model.Role);
+                    if(beforeRole != user.Role.Name)
+                    {
+                        var res3 = await _userManager.RemoveFromRoleAsync(user, beforeRole);
+                        //user.Role.UsersInRole.Remove(user);
+                        var res2 = await _userManager.AddToRoleAsync(user, model.Role);
+                        //user.Role.UsersInRole.Add(user);
+                    }
+
                     return RedirectToAction(nameof(Index));
                 }
                 else

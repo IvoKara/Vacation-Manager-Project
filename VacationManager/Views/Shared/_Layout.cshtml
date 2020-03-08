@@ -2,9 +2,12 @@
 <html lang="en">
 
 <head>
+    @using Microsoft.EntityFrameworkCore;
     @using Microsoft.AspNetCore.Identity;
     @using Data.Entitiy;
+    @using  Data.Context;
     @inject SignInManager<User> _signInManager;
+    @inject  VacantionContext _context;
     
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -34,13 +37,51 @@
             </div>
             <div class="list-group list-group-flush">
                 <a asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action bg-light">
-                    <i style="margin: 0px 4px" class="fas fa-address-book"></i> Users</a>
+                    <i style="margin: 0px 4px" class="fas fa-address-book"></i> Users
+                </a>
+                <a asp-controller="Roles" asp-action="Index" class="list-group-item list-group-item-action bg-light ">
+                    <i class="fas fa-user-tag"></i> Roles
+                </a>
                 <a asp-controller="Projects" asp-action="Index" class="list-group-item list-group-item-action bg-light">
-                    <i class="fas fa-project-diagram"></i> Projects</a>
+                    <i class="fas fa-project-diagram"></i> Projects
+                </a>
                 <a asp-controller="Teams" asp-action="Index" class="list-group-item list-group-item-action bg-light">
-                    <i class="fas fa-users"></i> Teams</a>
-                <a asp-controller="Vacations" asp-action="Index" class="list-group-item list-group-item-action bg-light">
-                    <i class="fas fa-umbrella-beach"></i> Vacations</a>
+                    <i class="fas fa-users"></i> Teams
+                </a>
+                @if (_signInManager.IsSignedIn(User))
+                {
+                    var user = _context.Users.Include(u => u.Role).First(u => u.UserName == User.Identity.Name);
+
+                    <a href="#vacationSubmenu" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action bg-light dropdown-toggle">
+                        <i class="fas fa-umbrella-beach"></i> Vacations
+                    </a>
+                    <ul class="collapse list-unstyled" id="vacationSubmenu">
+                        @if (user.Role.Name != "CEO")
+                        {
+                            <li>
+                                <a class="list-group-item list-group-item-action bg-light" asp-controller="Vacations" asp-action="Index">
+                                    <span style="font-size: 14px; margin-left: 40px;">My Vacations</span>
+                                </a>
+                            </li>
+                        }
+                        @if (user.Role.Name == "CEO" || user.Role.Name == "Team Lead")
+                        {
+                            <li>
+                                <a class="list-group-item list-group-item-action bg-light" asp-controller="Vacations" asp-action="ApproveRequests">
+                                    <span style="font-size: 14px; margin-left: 40px;">Approve requests</span>
+                                </a>
+                            </li>
+                        }
+                        @if (user.Role.Name != "CEO")
+                        {
+                            <li>
+                                <a class="list-group-item list-group-item-action bg-light" asp-controller="Vacations" asp-action="">
+                                    <span style="font-size: 14px; margin-left: 40px;">Send request</span>
+                                </a>
+                            </li>
+                        }
+                        </ul>
+                }
             </div>
         </div>
         <!-- /#sidebar-wrapper -->

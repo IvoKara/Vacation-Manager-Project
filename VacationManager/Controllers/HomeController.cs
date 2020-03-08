@@ -95,7 +95,7 @@ namespace VacationManager.Controllers
                     EmailConfirmed = true,
                     Password = model.Password,
                     Role = _roleManager.Roles.First(x => x.Name == "Unassigned"),
-                    Team = _context.Teams.First(x => x.TeamName == "-"),
+                    Team = _context.Teams.FirstOrDefault(x => x.TeamName == "-"),
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
 
@@ -103,6 +103,7 @@ namespace VacationManager.Controllers
                 if (result.Succeeded)
                 {
                     var res2 = await _userManager.AddToRoleAsync(newUser, "Unassigned");
+                    //newUser.Role.UsersInRole.Add(newUser);
                     await _signInManager.SignInAsync(newUser, false);
                     return RedirectToAction(nameof(Index));
                 }

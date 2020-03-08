@@ -7,6 +7,11 @@ namespace Data.Entitiy
 {
     public class Vacantion
     {
+        public Vacantion()
+        {
+            this.DateOfCreation = DateTime.UtcNow; 
+        }
+
         [Key]
         public int Id { get; set; }
        
@@ -22,6 +27,7 @@ namespace Data.Entitiy
         
         public bool Verified { get; set; }
         
+        [Required]
         public User FromUser { get; set; }
     }
 }
