@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Context;
@@ -20,7 +21,7 @@ namespace Web.Controllers
         private readonly RoleManager<Role> _roleManager;
         private readonly SignInManager<User> _signInManager;
         private const int PageSize = 10;
-
+        private string[] vacationTypes = { "paid", "unpaid", "sick" };
         public VacationsController(VacantionContext context, UserManager<User> userManager,
             RoleManager<Role> roleManager, SignInManager<User> signInManager)
         {
@@ -30,6 +31,15 @@ namespace Web.Controllers
             _signInManager = signInManager;
         }
 
+        private async Task<User> GetCurrentUser()
+        {
+            return await _context.Users.
+                 Include(u => u.Role).
+                 Include(u => u.Team).
+                 Include(u => u.Vacantions).
+                 FirstAsync(u => u.UserName == User.Identity.Name);
+        }
+
         // GET: Users
         public async Task<IActionResult> Index(VacationsIndexViewModel model)
         {
@@ -37,18 +47,13 @@ namespace Web.Controllers
             {
                 return RedirectToAction(nameof(NotLoggedIn));
             }
-            User user = await _context.Users.
-                 Include(u => u.Role).
-                 Include(u => u.Team).
-                 FirstAsync(u => u.UserName == User.Identity.Name);
-            if (user.Role.Name == "CEO" /*|| user.Role.Name == "Team Lead"*/)
-            {
-                return RedirectToAction(nameof(ApproveRequests));
-            }
+
             model.Pager = new PagerViewModel();
             model.Pager.CurrentPage = model.Pager.CurrentPage <= 0 ? 1 : model.Pager.CurrentPage;
 
-            /*List<Vacantion> items = user.Vacantions.Skip((model.Pager.CurrentPage - 1) * PageSize).
+            User currentUser = await GetCurrentUser();
+
+            List<Vacantion> items = currentUser.Vacantions.Skip((model.Pager.CurrentPage - 1) * PageSize).
                 Take(PageSize).Select(v => new Vacantion()
                 {
                     Id = v.Id,
@@ -56,15 +61,35 @@ namespace Web.Controllers
                     FromDate = v.FromDate,
                     ToDate = v.ToDate,
                     HalfDayVacantion = v.HalfDayVacantion,
-                    Verified = v.Verified,
-                    //FromUser = v.FromUser
+                    IsPending = v.IsPending,
+                    IsApproved = v.IsApproved,
+                    DateOfCreation = v.DateOfCreation,
+                    Editted = v.Editted
 
                 }).ToList();
 
             model.Items = items;
-            model.Pager.PagesCount = (int)Math.Ceiling(await _context.Users.CountAsync() / (double)PageSize);*/
+            model.Pager.PagesCount = (int)Math.Ceiling(await _context.Users.CountAsync() / (double)PageSize);
 
             return View(model);
+        }
+
+        public async Task<IActionResult> Approve(int id)
+        {
+            Vacantion vacation = await _context.Vacantions.FirstAsync(u => u.Id == id);
+            vacation.IsApproved = true;
+            vacation.IsPending = false;
+            _context.SaveChanges();
+            return RedirectToAction(nameof(ApproveRequests));
+        }
+
+        public async Task<IActionResult> Reject(int id)
+        {
+            Vacantion vacation = await _context.Vacantions.FirstAsync(u => u.Id == id);
+            vacation.IsApproved = false;
+            vacation.IsPending = false;
+            _context.SaveChanges();
+            return RedirectToAction(nameof(ApproveRequests));
         }
 
         public IActionResult NotLoggedIn()
@@ -72,19 +97,66 @@ namespace Web.Controllers
             return View();
         }
 
-        public IActionResult ApproveRequests()
+        public async Task<IActionResult> ApproveRequests(VacationsIndexViewModel model)
         {
-            return View();
+            model.Pager = new PagerViewModel();
+            model.Pager.CurrentPage = model.Pager.CurrentPage <= 0 ? 1 : model.Pager.CurrentPage;
+
+            List<Vacantion> items = _context.Vacantions.Include(v => v.FromUser).Where(v => v.IsPending)
+                .Skip((model.Pager.CurrentPage - 1) * PageSize)
+                .Take(PageSize).Select(v => new Vacantion()
+                    {
+                        Id = v.Id,
+                        FromUser = v.FromUser,
+                        Type = v.Type,
+                        FromDate = v.FromDate,
+                        ToDate = v.ToDate,
+                        HalfDayVacantion = v.HalfDayVacantion,
+                        IsPending = v.IsPending,
+                        IsApproved = v.IsApproved,
+                        DateOfCreation = v.DateOfCreation,
+                        Editted = v.Editted
+                    })
+                .ToList();
+
+            model.Items = items;
+            model.Pager.PagesCount = (int)Math.Ceiling(await _context.Users.CountAsync() / (double)PageSize);
+
+            return View(model);
         }
 
         // GET: Vacations/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Vacantion vacantion = await _context.Vacantions.Include(v => v.FromUser).FirstAsync(u => u.Id == id);
+            if (vacantion == null)
+            {
+                return NotFound();
+            }
+            VacationsDetailsViewModel model = new VacationsDetailsViewModel
+            {
+                Id = vacantion.Id,
+                FromDate = vacantion.FromDate,
+                ToDate = vacantion.ToDate,
+                Type = vacantion.Type,
+                DateOfCreation = vacantion.DateOfCreation,
+                HalfDayVacantion = vacantion.HalfDayVacantion,
+                ImageUpload = vacantion.ImageUpload,
+                IsApproved = vacantion.IsApproved,
+                IsPending = vacantion.IsPending,
+                FromUser = vacantion.FromUser
+            };
+            return View(model);
         }
 
         // GET: Vacations/Create
-        public ActionResult SendRequest()
+        [HttpGet]
+        public IActionResult SendRequest()
         {
             return View();
         }
@@ -92,64 +164,154 @@ namespace Web.Controllers
         // POST: Vacations/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult SendRequest(IFormCollection collection)
+        public async Task<IActionResult> SendRequest(VacationsCreateViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add insert logic here
+                User currentUser = await GetCurrentUser();
 
+                Vacantion newVacation = new Vacantion
+                {
+                    FromDate = model.FromDate,
+                    ToDate = model.ToDate,
+                    Type = model.Type,
+                    FromUser = currentUser,
+                    HalfDayVacantion = model.HalfDayVacantion
+                };
+
+                if(model.FromDate > model.ToDate)
+                {
+                    ModelState.AddModelError("FromDate", "From Date must be less than To Date.");
+                    ModelState.AddModelError("ToDate", "From Date must be less than To Date.");
+                }
+
+                if (model.Type == "sick" && model.ImageUpload == null)
+                {
+                    ModelState.AddModelError("ImageUpload", "Must upload image of sheet or record.");
+                    return View(model);
+                }
+                else if (model.ImageUpload != null)
+                {
+                    if (model.ImageUpload.Length > 0)
+                    //Convert Image to byte and save to database
+                    {
+                        byte[] p1 = null;
+                        using (var fs1 = model.ImageUpload.OpenReadStream())
+                        using (var ms1 = new MemoryStream())
+                        {
+                            fs1.CopyTo(ms1);
+                            p1 = ms1.ToArray();
+                        }
+                        newVacation.ImageUpload = p1;
+                    }
+                }
+                
+                _context.Add(newVacation);
+                _context.SaveChanges();
+                
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(model);
         }
 
+
         // GET: Vacations/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Vacantion vacantion = await _context.Vacantions.Include(v => v.FromUser).FirstAsync(u => u.Id == id);
+            if (vacantion == null)
+            {
+                return NotFound();
+            }
+            VacationsEditViewModel model = new VacationsEditViewModel
+            {
+                Id = vacantion.Id,
+                FromDate = vacantion.FromDate,
+                ToDate = vacantion.ToDate,
+                Type = vacantion.Type,
+                HalfDayVacantion = vacantion.HalfDayVacantion,
+            };
+            
+            if(model.Type == "sick")
+            {
+                model.CurrentImage = vacantion.ImageUpload;
+
+                /*var stream = new MemoryStream(model.CurrentImage);
+                model.ImageUpload = new FormFile(stream, 0, model.CurrentImage.Length, "file", "sickSheet");*/
+            }
+
+            return View(model);
         }
 
         // POST: Vacations/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(VacationsEditViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add update logic here
+                Vacantion vacation = await _context.Vacantions.Include(v => v.FromUser).FirstAsync(u => u.Id == model.Id);
+                vacation.Id = model.Id;
+                vacation.FromDate = model.FromDate;
+                vacation.ToDate = model.ToDate;
+                vacation.Type = model.Type;
+                vacation.HalfDayVacantion = model.HalfDayVacantion;
+                vacation.DateOfCreation = DateTime.Now;
+                vacation.Editted = true;
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+                if(vacation.Type == "sick")
+                {
+                    vacation.HalfDayVacantion = false;
+                    vacation.ImageUpload = model.CurrentImage;
 
-        // GET: Vacations/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
+                    if (model.CurrentImage == null && model.ImageUpload == null)
+                    {
+                        ModelState.AddModelError("ImageUpload", "Must upload image of sheet or record.");
+                        return await Edit(model.Id);
+                    }
+                    else if (model.ImageUpload != null)
+                    {
+                        if (model.ImageUpload.Length > 0)
+                        //Convert Image to byte and save to database
+                        {
+                            byte[] p1 = null;
+                            using (var fs1 = model.ImageUpload.OpenReadStream())
+                            using (var ms1 = new MemoryStream())
+                            {
+                                fs1.CopyTo(ms1);
+                                p1 = ms1.ToArray();
+                            }
+                            vacation.ImageUpload = p1;
+                        }
+                    }
+                }
+                else
+                {
+                    vacation.ImageUpload = null;
+                }
+                
+
+                _context.Update(vacation);
+                _context.SaveChanges();
+
+                return RedirectToAction("Details", "Vacations", new { id = vacation.Id });
+            }
+
+            return View(model);
         }
 
         // POST: Vacations/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            Vacantion vacation = await _context.Vacantions.FirstAsync(u => u.Id == id);
+            _context.Remove(vacation);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

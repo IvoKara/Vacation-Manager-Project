@@ -1,0 +1,90 @@
+﻿@model Web.Models.Vacations.VacationsDetailsViewModel
+@{
+    ViewData["Title"] = Model.FromDate.ToShortDateString() + " - " + Model.ToDate.ToShortDateString();
+}
+
+<h1 style="margin-bottom: 2%">@ViewData["Title"]</h1>
+
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.EntityFrameworkCore;
+@using Data.Entitiy;
+@using Data.Context;
+@inject SignInManager<User> _signInManager;
+@inject VacantionContext _context;
+@{
+    string[] role = { "" };
+    try
+    {
+        var user = await _signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+        var tempRole = await _signInManager.UserManager.GetRolesAsync(user);
+        role[0] = tempRole[0];
+    }
+    catch { }
+}
+
+<div class="container">
+    <p>
+        <b>From User: </b>
+        @{
+            string wholeName = Model.FromUser.FirstName + " " + Model.FromUser.LastName;
+            string userName = Model.FromUser.UserName;
+            string combinedName = wholeName + " (" + userName + ")";
+
+        }
+        <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.FromUser.Id">
+            @Html.DisplayFor(modelItem => combinedName)
+        </a>
+    </p>
+    <p><b>Created At / Updated At: </b>@Model.DateOfCreation</p>
+    @if (Model.IsPending)
+    {   
+        <p><b>State: </b><span class="text-primary">Pending</span></p>
+    }
+    else if (Model.IsApproved)
+    {
+        <p><b>State: </b><span class="text-success">Accepted</span></p>
+    }
+    else
+    {
+        <p><b>State: </b><span class="text-danger">Rejected</span></p>
+    }
+    
+    <p><b>Type: </b> @Model.Type</p>
+    @if (Model.Type == "sick")
+    {
+        <p><b>Sheet: </b></p>
+        <img class="img-responsive full-width" src="data:image/jpeg;base64,@Convert.ToBase64String(Model.ImageUpload)" />
+    }
+    else
+    {
+        if (Model.HalfDayVacantion)
+        {
+            <p><b>Half Day Vacation: </b><i class="fas fa-check"></i></p>
+        }
+        else
+        {
+            <p><b>Half Day Vacation: </b><i class="fas fa-times"></i></p>
+        }
+    }
+</div>
+
+@if (_signInManager.IsSignedIn(User) && Model.IsPending && Model.FromUser.UserName == User.Identity.Name)
+{
+
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <span>|</span>
+    <a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+
+}
+else if (_signInManager.IsSignedIn(User) && Model.IsPending && (role.First() == "CEO" || role.First() == "Team Lead"))
+{
+
+    <a asp-action="Approve" asp-route-id="@Model.Id" class="btn btn-success" role="button">Approve</a>
+    <span>|</span>
+    <a asp-action="Reject" asp-route-id="@Model.Id" class="btn btn-danger" role="button">Reject</a>
+
+}
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

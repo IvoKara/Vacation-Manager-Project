@@ -177,7 +177,7 @@ namespace Web
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, false);
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Details", "Users", new { id = user.Id });
                 }
                 else
                 {
@@ -259,7 +259,7 @@ namespace Web
                         //user.Role.UsersInRole.Add(user);
                     }
 
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Details", "Users", new { id = user.Id });
                 }
                 else
                 {
@@ -272,6 +272,7 @@ namespace Web
             return View(model);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             User user = await _userManager.FindByIdAsync(id.ToString());

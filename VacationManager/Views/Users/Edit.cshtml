@@ -6,7 +6,7 @@
 @inject VacantionContext _context;
 @{
     ViewData["Title"] = "Edit User";
-    //Layout = "~/Views/Shared/_NoLayout.cshtml";
+    Layout = "~/Views/Shared/_NoLayout.cshtml";
 
     var currentTeam = (Team)ViewData["BeforeTeam"];
     var team = _context.Teams.Where(x => x.TeamName != currentTeam.TeamName && x.TeamName != "-").ToList();

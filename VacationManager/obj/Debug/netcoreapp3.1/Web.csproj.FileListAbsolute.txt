@@ -187,3 +187,6 @@ C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\R
 C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Razor\Views\Vacations\Index.cshtml.g.cs
 C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Razor\Views\Vacations\NotLoggedIn.cshtml.g.cs
 C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Razor\Views\Vacations\ApproveRequests.cshtml.g.cs
+C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Razor\Views\Vacations\SendRequest.cshtml.g.cs
+C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Razor\Views\Vacations\Details.cshtml.g.cs
+C:\Users\Elena\Desktop\VacationManager\VacationManager\obj\Debug\netcoreapp3.1\Razor\Views\Vacations\Edit.cshtml.g.cs

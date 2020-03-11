@@ -1,2 +1,104 @@
-﻿<h1>Approve Requests</h1>
+﻿@model Web.Models.Vacations.VacationsIndexViewModel
 
+@{
+    ViewData["Title"] = "Approve Vacation Requests";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.EntityFrameworkCore;
+@using Data.Entitiy;
+@using Data.Context;
+@inject SignInManager<User> _signInManager;
+@inject VacantionContext _context;
+@{
+    string[] role = { "" };
+    try
+    {
+        var user = await _signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+        var tempRole = await _signInManager.UserManager.GetRolesAsync(user);
+        role[0] = tempRole[0];
+    }
+    catch
+    {
+
+    }
+}
+
+<table class="table">
+    <thead>
+        <tr style="text-align:center;">
+            <th>
+                User
+            </th>
+            <th>
+                From Date - To Date
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Created at / Updated at
+            </th>
+            <th>
+                <!--For details-->
+            </th>
+            <th>
+                <!--For approve/reject-->
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+        <tr style="text-align:center; vertical-align: middle;">
+            <td>
+                @{
+                    string wholeName = item.FromUser.FirstName + " " + item.FromUser.LastName;
+                }
+                <a asp-controller="Users" asp-action="Details" asp-route-id="@item.FromUser.Id">
+                    @Html.DisplayFor(modelItem => wholeName)
+                </a>
+            </td>
+            <td>
+                @{
+                    string from = item.FromDate.ToShortDateString();
+                    string to = item.ToDate.ToShortDateString();
+                }
+                @Html.DisplayFor(modelItem => from) -
+                @Html.DisplayFor(modelItem => to)
+                @if (item.Editted)
+                {
+                    <span style="color: grey; font-size: 11px;">(editted)</span>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfCreation)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+            </td>
+            <td>
+                <a asp-action="Approve" asp-route-id="@item.Id" class="btn btn-success" role="button" style="padding-top: 0px !important;">
+                    <i class="fas fa-check" style="font-size: 8px"></i>
+                </a>
+                <a asp-action="Reject" asp-route-id="@item.Id" class="btn btn-danger" role="button" style="padding-top: 0px !important;">
+                    <i class="fas fa-times" style="font-size: 10px"></i>
+                </a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+<ul class="pagination d-flex justify-content-center">
+    @for (var i = 1; i <= Model.Pager.PagesCount; i++)
+    {
+        <li class="page-item @(i == Model.Pager.CurrentPage ? "active" : "")">
+            <a asp-route-Pager.CurrentPage="@i" class="page-link">@i</a>
+        </li>
+    }
+</ul>

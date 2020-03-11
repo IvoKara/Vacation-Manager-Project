@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -9,7 +10,9 @@ namespace Data.Entitiy
     {
         public Vacantion()
         {
-            this.DateOfCreation = DateTime.UtcNow; 
+            this.DateOfCreation = DateTime.Now;
+            this.IsApproved = false;
+            this.IsPending = true;
         }
 
         [Key]
@@ -25,9 +28,15 @@ namespace Data.Entitiy
 
         public bool HalfDayVacantion { get; set; }
         
-        public bool Verified { get; set; }
-        
+        public bool IsApproved { get; set; }
+
+        public bool IsPending { get; set; }
+
+        public bool Editted { get; set; }
+
         [Required]
         public User FromUser { get; set; }
+
+        public byte[] ImageUpload { get; set; }
     }
 }

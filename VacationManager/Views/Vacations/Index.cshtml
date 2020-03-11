@@ -1,1 +1,113 @@
-﻿<h1>My Vacations Requests</h1>
+﻿@model Web.Models.Vacations.VacationsIndexViewModel
+
+@{
+    ViewData["Title"] = "My Vacation Requests";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.EntityFrameworkCore;
+@using Data.Entitiy;
+@using Data.Context;
+@inject SignInManager<User> _signInManager;
+@inject VacantionContext _context;
+@{
+    string[] role = { "" };
+    try
+    {
+        var user = await _signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+        var tempRole = await _signInManager.UserManager.GetRolesAsync(user);
+        role[0] = tempRole[0];
+    }
+    catch
+    {
+
+    }
+}
+
+
+<p>
+    <a asp-action="SendRequest" class="btn btn-primary" role="button" style="margin: 1% 1%">
+        Send New Request
+    </a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr style="text-align:center;">
+            <th>
+                <!--For icons-->
+            </th>
+            <th>
+                From Date - To Date
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Created at / Updated at
+            </th>
+            <th>
+                <!--For details-->
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+        <tr style="text-align:center;">
+            <td>
+                @if (item.IsPending)
+                {
+                    <img src="~/img/pending.png" alt="Pending" height="25" width="25" />
+                }
+                else if (item.IsApproved)
+                {
+                    <img src="~/img/approved.png" alt="Approved" height="25" width="25" />
+                }
+                else
+                {
+                    <img src="~/img/rejected.png" alt="Rejected" height="25" width="25" />
+                }
+            </td>
+            <td>
+                @{
+                    string from = item.FromDate.ToShortDateString();
+                    string to = item.ToDate.ToShortDateString(); 
+                }
+                @Html.DisplayFor(modelItem => from) -
+                @Html.DisplayFor(modelItem => to)     
+                @if(item.Editted)
+                {
+                    <span style="color: grey; font-size: 11px;">(editted)</span>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfCreation)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                @if(item.IsPending)
+                {
+                    <span>|</span>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <span>|</span>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+<ul class="pagination d-flex justify-content-center">
+    @for (var i = 1; i <= Model.Pager.PagesCount; i++)
+    {
+        <li class="page-item @(i == Model.Pager.CurrentPage ? "active" : "")">
+            <a asp-route-Pager.CurrentPage="@i" class="page-link">@i</a>
+        </li>
+    }
+</ul>
