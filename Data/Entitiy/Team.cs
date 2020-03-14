@@ -14,10 +14,11 @@ namespace Data.Entitiy
 
         public string TeamName { get; set; }
 
-        [Required]
+        //[Required]
         [InverseProperty("Team")]
         public ICollection<User> Developers { get; set; }
 
+        //[InverseProperty("Team")]
         public User Leader { get; set; }
 
         public Project WorkingOnProject { get; set; }

@@ -11,18 +11,21 @@ namespace Web.Models.Teams
 {
     public class TeamsCreateViewModel
     {
-        [HiddenInput]
-        public int Id { get; set; }
-       // []
+        [Required(ErrorMessage = "Team must have a Name!")]
         public string TeamName { get; set; }
 
-        [Required]
-        [InverseProperty("Team")]
-        public ICollection<User> Developers { get; set; }
+        //[Required(ErrorMessage = "Team must have at least two members.")]
+        public string[] Developers { get; set; }
 
-        public User Leader { get; set; }
+        //public User Leader { get; set; }
 
-        //[Unique(ErrorMessage = "This already exist !!")]
-        public Project WorkingOnProject { get; set; }
+        //[Required(ErrorMessage = "Team must be working on existing or new project.")]
+        public string WorkingOnProject { get; set; }
+
+        public bool NewProject { get; set; }
+
+        [Required(ErrorMessage = "Team must have a Leader!")]
+
+        public string Leader { get; set; }
     }
 }
