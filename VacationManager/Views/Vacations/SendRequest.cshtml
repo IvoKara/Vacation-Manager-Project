@@ -11,13 +11,21 @@
         Value = vacationTypes[n - 1],
         Text = vacationTypes[n - 1]
     }).ToList();
-
-    string selected = "";
 }
 
 <script type="text/javascript">
     window.onload = function() {
-        @selected = $("#select option:selected").text();
+        var textValue = $('#select').val();
+        if (textValue == "sick") {
+
+            $('#halfDay').hide();
+            $('#file').show();
+        }
+        else {
+            
+            $('#file').hide();
+            $('#halfDay').show();
+        }
     };
 </script>
 
@@ -43,7 +51,7 @@
                 <input asp-for="ToDate" class="form-control" />
                 <span asp-validation-for="ToDate" class="text-danger"></span>
             </div>
-            <div class="form-group" id="halfDay" style="@(selected != "sick" ? "display:block" : "display:none")">
+            <div class="form-group" id="halfDay">
                 <div class="checkbox">
                     <label asp-for="HalfDayVacantion">
                         <input asp-for="HalfDayVacantion" /> Half Day Vacation
@@ -51,7 +59,7 @@
                 </div>
             </div>
             <div class="form-group" id="file">
-                <label asp-for="ImageUpload" class="control-label" style="@(selected == "sick" ? "display:block" : "display:none")">
+                <label asp-for="ImageUpload" class="control-label">
                     Image to Upload
                 </label>
                 <input asp-for="ImageUpload" type="file" />

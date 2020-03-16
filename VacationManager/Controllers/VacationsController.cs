@@ -102,8 +102,15 @@ namespace Web.Controllers
             model.Pager = new PagerViewModel();
             model.Pager.CurrentPage = model.Pager.CurrentPage <= 0 ? 1 : model.Pager.CurrentPage;
 
-            List<Vacantion> items = _context.Vacantions.Include(v => v.FromUser).Where(v => v.IsPending)
-                .Skip((model.Pager.CurrentPage - 1) * PageSize)
+            User currentUser = await GetCurrentUser();
+
+            var vacations = _context.Vacantions.Include(v => v.FromUser).Where(v => v.IsPending);
+            if (currentUser.Role.Name == "Team Lead")
+            {
+                vacations = vacations.Where(v => v.FromUser.Team == currentUser.Team);
+            }
+
+            List<Vacantion> items = vacations.Skip((model.Pager.CurrentPage - 1) * PageSize)
                 .Take(PageSize).Select(v => new Vacantion()
                     {
                         Id = v.Id,

@@ -21,9 +21,8 @@
 <div class="container">
     <p><b>Email:</b> @Model.Email</p>
     <p><b>UserName:</b> @Model.UserName</p>
-    <p><b>Team:</b> @Model.Team</p>
+    <p><b>Team:</b> <a asp-route-id="@Model.Team.Id" asp-action="Details" asp-controller="Teams">@Model.Team.TeamName</a></p>
     <p><b>Role:</b> @Model.Role</p>
-    <p><b>Leader of team:</b> </p>
 </div>
 
 

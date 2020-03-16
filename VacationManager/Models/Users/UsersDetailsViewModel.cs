@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Data.Entitiy;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -31,7 +32,7 @@ namespace Web.Models.Users
         
         public string Role { get; set; }
 
-        public string Team { get; set; }
+        public Team Team { get; set; }
 
         public bool IsLeader { get; set; }
     }

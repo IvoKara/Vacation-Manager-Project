@@ -127,7 +127,7 @@ namespace Web
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 UserName = user.UserName,
-                Team = user.Team.TeamName,
+                Team = user.Team,
                 Role = user.Role.Name
             };
             return View(model);
