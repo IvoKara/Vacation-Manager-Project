@@ -79,6 +79,12 @@ namespace Web
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
 
+                if (_context.Users.Any(x => x.Email == model.Email))
+                {
+                    ModelState.AddModelError("Email", "User with this email already exists.");
+                    return View(model);
+                }
+
                 var result = await _userManager.CreateAsync(newUser, model.Password);
                 if (result.Succeeded)
                 {
@@ -272,7 +278,6 @@ namespace Web
             return View(model);
         }
 
-        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             User user = await _userManager.FindByIdAsync(id.ToString());

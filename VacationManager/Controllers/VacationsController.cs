@@ -179,16 +179,18 @@ namespace Web.Controllers
                     HalfDayVacantion = model.HalfDayVacantion
                 };
 
+                bool mark = false;
                 if(model.FromDate > model.ToDate)
                 {
                     ModelState.AddModelError("FromDate", "From Date must be less than To Date.");
                     ModelState.AddModelError("ToDate", "From Date must be less than To Date.");
+                    mark = true;
                 }
 
                 if (model.Type == "sick" && model.ImageUpload == null)
                 {
                     ModelState.AddModelError("ImageUpload", "Must upload image of sheet or record.");
-                    return View(model);
+                    mark = true;
                 }
                 else if (model.ImageUpload != null)
                 {
@@ -206,6 +208,11 @@ namespace Web.Controllers
                     }
                 }
                 
+                if(mark)
+                {
+                    return View(model);
+                }
+
                 _context.Add(newVacation);
                 _context.SaveChanges();
                 

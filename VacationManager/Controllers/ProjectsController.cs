@@ -44,14 +44,8 @@ namespace Web
             return View(model);
         }
 
-        // GET: Projects/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: Projects/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
@@ -59,64 +53,74 @@ namespace Web
         // POST: Projects/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Create(ProjectsCreateViewModel model)
         {
-            try
+            if(ModelState.IsValid)
             {
-                // TODO: Add insert logic here
+                Project newProject = new Project
+                {
+                    ProjectName = model.ProjectName,
+                    Description = model.Description
+                };
 
+                _context.Add(newProject);
+                _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(model);
         }
 
         // GET: Projects/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int ?id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Project project = await _context.Projects.FirstAsync(u => u.Id == id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            ProjectsEditViewModel model = new ProjectsEditViewModel
+            {
+                Id = project.Id,
+                ProjectName = project.ProjectName,
+                Description = project.Description
+            };
+
+            return View(model);
         }
 
         // POST: Projects/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public IActionResult Edit(ProjectsEditViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add update logic here
+                Project project = new Project
+                {
+                    Id = model.Id,
+                    ProjectName = model.ProjectName,
+                    Description = model.Description
+                };
 
+                _context.Update(project);
+                _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(model);
         }
 
-        // GET: Projects/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            return View();
-        }
-
-        // POST: Projects/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            Project project = await _context.Projects.FirstAsync(u => u.Id == id);
+            _context.Remove(project);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

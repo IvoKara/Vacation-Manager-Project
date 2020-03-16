@@ -14,8 +14,13 @@
 
 <script type="text/javascript">
     window.onload = function () {
-        for (var i = 2; i < 5; i++) {
-            $("#dev" + i).hide();
+        for (var i = 0; i < 5; i++) {
+            if (i >= @Model.BoxesToShow) {
+                $("#dev" + i).hide();
+                if (i == @Model.BoxesToShow) {
+                $("#btn" + (i - 1)).show();
+                }
+            }
             $("#btn" + i).hide();
         }
     }
@@ -37,8 +42,8 @@
                 <span asp-validation-for="Leader" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Team Members: <span style="color: grey; font-size: 11px;">(Max 5, Min 2)</span></label>
-                <span asp-validation-for="Developers" class="text-danger"></span>
+                <label class="control-label">Team Members: <span style="color: grey; font-size: 11px;">(Min 2, Max 5)</span></label>
+                <span asp-validation-for="Developers" class="text-danger"></span> <br />
                 <div style="display: inline-flex; margin-bottom: 1.5%;">
                     <input id="dev0" class="form-control" style="display: inline-block;"
                            placeholder="Member 1..."
@@ -78,12 +83,12 @@
 <script type='text/javascript'>
 
     function showMore(idNumber) {
-        if (idNumber == 4) {
-            return;
-        }
         $("#btn" + idNumber).hide();
         $("#dev" + (idNumber + 1)).show();
         $("#btn" + (idNumber + 1)).show();
+        if (idNumber >= 3) {
+            $("#btn" + (idNumber + 1)).hide();
+        }
     }
 
 /*    function onBlur(idNumber) {

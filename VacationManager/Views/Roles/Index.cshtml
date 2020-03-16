@@ -43,12 +43,14 @@
             @foreach (var item in part)
             {
                 <div class="col-sm" style="text-align:center; font-size:20px;">
-                    @if (item.UsersInRole.Count > 1 && item.Name != "Unassigned")
-                    {
-                        item.Name += "s";
-                    }
-                    
-                    <a asp-action="@item.Name">@item.Name</a>
+                    @{ 
+                        string name = item.Name;
+                        if (item.UsersInRole.Count > 1 && item.Name != "Unassigned")
+                        {
+                            name += "s";
+                        }
+                    }                    
+                    <a asp-action="@item.Name.Replace(" ", "")">@name</a>
                 </div>
             }
         </div>

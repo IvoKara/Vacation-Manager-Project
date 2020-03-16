@@ -26,6 +26,11 @@ namespace Data.Context
              .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<User>()
+             .HasMany(a => a.Vacantions)
+             .WithOne(b => b.FromUser)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
              .HasOne(b => b.Team)
              .WithMany(a => a.Developers)
              .OnDelete(DeleteBehavior.SetNull);
