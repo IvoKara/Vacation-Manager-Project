@@ -3,8 +3,8 @@
 
 Изисквания преди подкарване на проекта:
  - трябва да се създаде нов user за базата данни с име "*root*" и парола "*rootroot*". 
-<img>
-- Това е постижимо чрез  "Microsoft SQL Server Management Studio" като типа на автентикацията трябва да е "*SQL Server Authentication*"
+!(./Web/wwwroot/img/ConnectionString.PNG)
+ - Това е постижимо чрез  "Microsoft SQL Server Management Studio" като типа на автентикацията трябва да е "*SQL Server Authentication*"
 <img>
 
 ## Постигнати резултати 
