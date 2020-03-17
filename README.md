@@ -1,6 +1,8 @@
 
 # Vacation-Manager-Project
 
+Линк към активно Github хранилище - https://github.com/IvoKara/Vacation-Manager-Project
+
 Изисквания преди подкарване на проекта:
  - трябва да се създаде нов user за базата данни с име "*root*" и парола "*rootroot*". 
 ![Connection String](./Web/wwwroot/img/ConnectionString.PNG)
