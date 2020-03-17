@@ -107,7 +107,7 @@ namespace Web.Controllers
             var vacations = _context.Vacantions.Include(v => v.FromUser).Where(v => v.IsPending);
             if (currentUser.Role.Name == "Team Lead")
             {
-                vacations = vacations.Where(v => v.FromUser.Team == currentUser.Team);
+                vacations = vacations.Where(v => v.FromUser.Team == currentUser.Team && v.FromUser != currentUser);
             }
 
             List<Vacantion> items = vacations.Skip((model.Pager.CurrentPage - 1) * PageSize)
