@@ -4,8 +4,8 @@
 Изисквания преди подкарване на проекта:
  - трябва да се създаде нов user за базата данни с име "*root*" и парола "*rootroot*". 
 ![Connection String](./Web/wwwroot/img/ConnectionString.PNG)
- - Това е постижимо чрез  "Microsoft SQL Server Management Studio" като типа на автентикацията трябва да е "*SQL Server Authentication*"
-![sql auth](./Web/wwwroot/img/AuthMSSQL.PNG)
+ - Това е постижимо чрез  "Microsoft SQL Server Management Studio" като типа на автентикацията трябва да е "*SQL Server Authentication*"<br />
+ ![sql auth](./Web/wwwroot/img/AuthMSSQL.PNG)
 
 ## Постигнати резултати 
  1. Компонент "**Users**":
@@ -13,8 +13,6 @@
 	 ![Users](./Web/wwwroot/img/notLogged.PNG)
 	 -  **Login** и **Sign up** - Login за вече съществуващи потребители, а Sign up, за такива, който да си създадат профил в системата. След създаването потребителя влиза в систмата автоматино и по default е с роля "*Unassigned*" и не принадлежи на ничии екип.
 	 ![Login Signup](./Web/wwwroot/img/LoginSignup.PNG)
-	 ![Login](./Web/wwwroot/img/Loggin.PNG)
-	 ![Signup](./Web/wwwroot/img/SignUp.PNG)
 	 - Страница с **детайлна** информнация за потребителя. 
 	 - Възможност на потребителя да редактира своите данни, но **БЕЗ** да променя ролята си или членството си в даден екип
 	 - Възможност на потребителя да трие своят профил 
