@@ -1,0 +1,48 @@
+﻿@model Web.Models.Users.UsersDetailsViewModel
+@using Microsoft.AspNetCore.Identity;
+@using Data.Entitiy;
+@inject SignInManager<User> _signInManager;
+
+@{
+    ViewData["Title"] = Model.FirstName + " " + Model.LastName;
+
+    string[] role = { "" };
+    try
+    {
+        var user = await _signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+        var tempRole = await _signInManager.UserManager.GetRolesAsync(user);
+        role[0] = tempRole[0];
+    }
+    catch { }
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="container">
+    <p><b>Email:</b> @Model.Email</p>
+    <p><b>UserName:</b> @Model.UserName</p>
+    <p><b>Team:</b> <a asp-route-id="@Model.Team.Id" asp-action="Details" asp-controller="Teams">@Model.Team.TeamName</a></p>
+    <p><b>Role:</b> @Model.Role</p>
+</div>
+
+
+
+@if (_signInManager.IsSignedIn(User) && role.First() == "CEO")
+{
+
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+
+}
+
+else if (_signInManager.IsSignedIn(User) && User.Identity.Name == Model.UserName)
+{
+
+    <a asp-action="UserEdit" asp-route-id="@Model.Id">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+
+}
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
